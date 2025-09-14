@@ -1,0 +1,295 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Zurich ETL Supabase RPC Contract",
+    "version": "1.0.0",
+    "description": "API contract for Supabase RPC function calls in Zurich vehicle homologation process"
+  },
+  "servers": [
+    {
+      "url": "https://zsyapaddgdrnqfdxxzjw.supabase.co/rest/v1",
+      "description": "Supabase Production Environment"
+    }
+  ],
+  "paths": {
+    "/rpc/procesar_batch_zurich": {
+      "post": {
+        "summary": "Process batch of normalized Zurich vehicle records",
+        "description": "Accepts a batch of normalized vehicle records and performs homologation matching, updating or creating records in the master catalog",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchProcessRequest"
+              },
+              "example": {
+                "vehiculos_json": [
+                  {
+                    "origen_aseguradora": "ZURICH",
+                    "id_original": "12345",
+                    "marca": "TOYOTA",
+                    "modelo": "COROLLA",
+                    "anio": 2023,
+                    "version_limpia": "ADVANCE SEDAN 145HP 2L 4CIL 4Puertas",
+                    "transmision": "AUTO",
+                    "hash_comercial": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchProcessResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "total_procesados": 1,
+                  "registros_actualizados": 0,
+                  "registros_creados": 1,
+                  "errores": 0,
+                  "tiempo_procesamiento": "2.5s",
+                  "detalles": {
+                    "matches_encontrados": 0,
+                    "fuzzy_matches": 0,
+                    "nuevos_vehiculos": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ServiceRoleKey": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchProcessRequest": {
+        "type": "object",
+        "required": ["vehiculos_json"],
+        "properties": {
+          "vehiculos_json": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NormalizedVehicleRecord"
+            },
+            "minItems": 1,
+            "maxItems": 50000,
+            "description": "Array of normalized vehicle records to process"
+          }
+        }
+      },
+      "NormalizedVehicleRecord": {
+        "type": "object",
+        "required": [
+          "origen_aseguradora",
+          "id_original",
+          "marca",
+          "modelo",
+          "anio",
+          "version_limpia",
+          "transmision",
+          "hash_comercial"
+        ],
+        "properties": {
+          "origen_aseguradora": {
+            "type": "string",
+            "enum": ["ZURICH"],
+            "description": "Source insurer identifier"
+          },
+          "id_original": {
+            "type": "string",
+            "description": "Original record ID from source system"
+          },
+          "marca": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Normalized vehicle brand"
+          },
+          "modelo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Normalized vehicle model"
+          },
+          "anio": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2030,
+            "description": "Vehicle model year"
+          },
+          "version_limpia": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cleaned version string with integrated technical specifications (power, displacement, cylinders, doors, traction). Format: [TRIM] [BODY] [POWER] [DISPLACEMENT] [CYLINDERS] [DOORS] [TRACTION]. Example: 'ADVANCE SEDAN 145HP 2L 4CIL 4Puertas AWD'. Note: Security features and occupant info excluded."
+          },
+          "transmision": {
+            "type": "string",
+            "enum": ["MANUAL", "AUTO"],
+            "nullable": true,
+            "description": "Standardized transmission type"
+          },
+          "hash_comercial": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 hash of marca+modelo+anio+transmision"
+          },
+        }
+      },
+      "BatchProcessResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "total_procesados",
+          "registros_actualizados",
+          "registros_creados",
+          "errores"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["success", "partial_success", "error"],
+            "description": "Overall processing status"
+          },
+          "total_procesados": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of records processed"
+          },
+          "registros_actualizados": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of existing records updated"
+          },
+          "registros_creados": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of new records created"
+          },
+          "errores": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of records that failed processing"
+          },
+          "tiempo_procesamiento": {
+            "type": "string",
+            "description": "Processing duration"
+          },
+          "detalles": {
+            "$ref": "#/components/schemas/ProcessingDetails"
+          },
+          "errores_detalle": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessingError"
+            },
+            "description": "Details of processing errors"
+          }
+        }
+      },
+      "ProcessingDetails": {
+        "type": "object",
+        "properties": {
+          "matches_encontrados": {
+            "type": "integer",
+            "description": "Number of exact hash matches found"
+          },
+          "fuzzy_matches": {
+            "type": "integer",
+            "description": "Number of fuzzy matches above threshold"
+          },
+          "nuevos_vehiculos": {
+            "type": "integer",
+            "description": "Number of completely new vehicle entries"
+          },
+          "similaridad_promedio": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Average similarity score for matches"
+          }
+        }
+      },
+      "ProcessingError": {
+        "type": "object",
+        "required": ["id_original", "mensaje"],
+        "properties": {
+          "id_original": {
+            "type": "string",
+            "description": "Original record ID that failed"
+          },
+          "mensaje": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "codigo_error": {
+            "type": "string",
+            "description": "Error code for categorization"
+          },
+          "datos_originales": {
+            "type": "object",
+            "description": "Original record data for debugging"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error context"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ServiceRoleKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey",
+        "description": "Supabase service role key"
+      }
+    }
+  }
+}

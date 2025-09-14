@@ -1,0 +1,368 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "n8n Workflow Data Contract",
+    "version": "1.0.0",
+    "description": "Data contracts and interfaces for n8n workflow nodes in Zurich ETL process"
+  },
+  "components": {
+    "schemas": {
+      "SqlExtractionOutput": {
+        "type": "object",
+        "description": "Output schema from SQL Server extraction node",
+        "required": [
+          "origen_aseguradora",
+          "id_original",
+          "marca",
+          "modelo",
+          "anio"
+        ],
+        "properties": {
+          "origen_aseguradora": {
+            "type": "string",
+            "enum": ["ZURICH"],
+            "description": "Source insurer identifier"
+          },
+          "id_original": {
+            "type": "string",
+            "description": "Zurich fiId from Version table"
+          },
+          "marca": {
+            "type": "string",
+            "description": "Brand name from Marcas.fcMarca"
+          },
+          "modelo": {
+            "type": "string",
+            "description": "Model name from SubMarcas.fcSubMarca"
+          },
+          "anio": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2030,
+            "description": "Model year from Version.fiModelo"
+          },
+          "version_original": {
+            "type": "string",
+            "nullable": true,
+            "description": "VersionCorta or fcVersion field"
+          },
+          "transmision": {
+            "type": "string",
+            "enum": ["MANUAL", "AUTO"],
+            "nullable": true,
+            "description": "Mapped transmission from fiTransmision"
+          },
+          "activo": {
+            "type": "integer",
+            "enum": [1],
+            "description": "Active flag (always 1 for Zurich)"
+          }
+        },
+        "example": {
+          "origen_aseguradora": "ZURICH",
+          "id_original": "12345",
+          "marca": "TOYOTA",
+          "modelo": "COROLLA",
+          "anio": 2023,
+          "version_original": "ADVANCE SEDAN AUT AA EE CD BA QC VP 145HP ABS 2L 4CIL 4P 5OCUP",
+          "transmision": "AUTO",
+          "activo": 1
+        }
+      },
+      "CodeNodeInput": {
+        "type": "object",
+        "description": "Input to n8n Code normalization node",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SqlExtractionOutput"
+          }
+        ]
+      },
+      "CodeNodeOutput": {
+        "type": "object",
+        "description": "Output from n8n Code normalization node",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/NormalizedRecord"
+          },
+          {
+            "$ref": "#/components/schemas/ErrorRecord"
+          }
+        ]
+      },
+      "NormalizedRecord": {
+        "type": "object",
+        "required": [
+          "origen_aseguradora",
+          "id_original",
+          "marca",
+          "modelo",
+          "anio",
+          "version_limpia",
+          "transmision",
+          "hash_comercial"
+        ],
+        "properties": {
+          "origen_aseguradora": {
+            "type": "string",
+            "enum": ["ZURICH"]
+          },
+          "id_original": {
+            "type": "string"
+          },
+          "marca": {
+            "type": "string",
+            "description": "Normalized brand name (trimmed, standardized case)"
+          },
+          "modelo": {
+            "type": "string",
+            "description": "Normalized model name (trimmed, standardized case)"
+          },
+          "anio": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2030
+          },
+          "version_limpia": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cleaned version with integrated technical specifications (power, displacement, cylinders, doors, traction). Format: [TRIM] [BODY] [POWER] [DISPLACEMENT] [CYLINDERS] [DOORS] [TRACTION]. Example: 'ADVANCE SEDAN 145HP 2L 4CIL 4Puertas AWD'. Note: Security features and occupant info excluded."
+          },
+          "transmision": {
+            "type": "string",
+            "enum": ["MANUAL", "AUTO"],
+            "nullable": true
+          },
+          "hash_comercial": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 hash of marca+modelo+anio+transmision"
+          },
+          "fecha_procesamiento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stats_normalizacion": {
+            "type": "object",
+            "properties": {
+              "version_original_length": {
+                "type": "integer"
+              },
+              "version_limpia_length": {
+                "type": "integer"
+              },
+              "elementos_removidos": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "elementos_preservados": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "origen_aseguradora": "ZURICH",
+          "id_original": "12345",
+          "marca": "TOYOTA",
+          "modelo": "COROLLA",
+          "anio": 2023,
+          "version_limpia": "ADVANCE SEDAN 145HP 2L 4CIL 4Puertas",
+          "transmision": "AUTO",
+          "hash_comercial": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+          "fecha_procesamiento": "2025-01-13T10:00:00.000Z"
+        }
+      },
+      "ErrorRecord": {
+        "type": "object",
+        "required": [
+          "error",
+          "mensaje",
+          "id_original"
+        ],
+        "properties": {
+          "error": {
+            "type": "boolean",
+            "enum": [true]
+          },
+          "mensaje": {
+            "type": "string",
+            "description": "Error description"
+          },
+          "id_original": {
+            "type": "string",
+            "description": "Original record ID that failed"
+          },
+          "codigo_error": {
+            "type": "string",
+            "enum": [
+              "VALIDATION_ERROR",
+              "NORMALIZATION_ERROR",
+              "HASH_GENERATION_ERROR",
+              "SPEC_EXTRACTION_ERROR"
+            ]
+          },
+          "registro_original": {
+            "type": "object",
+            "description": "Original input data for debugging"
+          },
+          "stack_trace": {
+            "type": "string",
+            "description": "Error stack trace for debugging"
+          },
+          "fecha_error": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "error": true,
+          "mensaje": "Invalid year range: 1999 not between 2000-2030",
+          "id_original": "67890",
+          "codigo_error": "VALIDATION_ERROR",
+          "registro_original": {
+            "origen_aseguradora": "ZURICH",
+            "id_original": "67890",
+            "marca": "FORD",
+            "modelo": "FOCUS",
+            "anio": 1999
+          },
+          "fecha_error": "2025-01-13T10:00:00.000Z"
+        }
+      },
+      "BatchSummary": {
+        "type": "object",
+        "description": "Summary statistics for processed batch",
+        "properties": {
+          "total_records": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "successful_records": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "error_records": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "processing_duration": {
+            "type": "number",
+            "description": "Processing time in milliseconds"
+          },
+          "memory_usage": {
+            "type": "object",
+            "properties": {
+              "rss": {
+                "type": "string"
+              },
+              "heapUsed": {
+                "type": "string"
+              },
+              "heapTotal": {
+                "type": "string"
+              }
+            }
+          },
+          "error_breakdown": {
+            "type": "object",
+            "properties": {
+              "VALIDATION_ERROR": {
+                "type": "integer"
+              },
+              "NORMALIZATION_ERROR": {
+                "type": "integer"
+              },
+              "HASH_GENERATION_ERROR": {
+                "type": "integer"
+              },
+              "SPEC_EXTRACTION_ERROR": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "HttpRequestBody": {
+        "type": "object",
+        "description": "Request body for Supabase HTTP node",
+        "required": ["vehiculos_json"],
+        "properties": {
+          "vehiculos_json": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NormalizedRecord"
+            },
+            "minItems": 1,
+            "maxItems": 50000
+          }
+        }
+      }
+    }
+  },
+  "examples": {
+    "CompleteWorkflowFlow": {
+      "description": "Complete data flow through n8n workflow",
+      "value": {
+        "step1_sql_extraction": {
+          "node": "Microsoft SQL Server",
+          "output": [
+            {
+              "origen_aseguradora": "ZURICH",
+              "id_original": "12345",
+              "marca": "TOYOTA",
+              "modelo": "COROLLA",
+              "anio": 2023,
+              "version_original": "ADVANCE SEDAN AUT AA EE CD BA QC VP 145HP ABS 2L 4CIL 4P 5OCUP",
+              "transmision": "AUTO",
+              "activo": 1
+            }
+          ]
+        },
+        "step2_normalization": {
+          "node": "Code (Normalization)",
+          "output": [
+            {
+              "origen_aseguradora": "ZURICH",
+              "id_original": "12345",
+              "marca": "TOYOTA",
+              "modelo": "COROLLA",
+              "anio": 2023,
+              "version_limpia": "ADVANCE SEDAN 145HP 2L 4CIL 4Puertas",
+              "transmision": "AUTO",
+              "hash_comercial": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+            }
+          ]
+        },
+        "step3_supabase_rpc": {
+          "node": "HTTP Request (Supabase RPC)",
+          "request_body": {
+            "vehiculos_json": [
+              {
+                "origen_aseguradora": "ZURICH",
+                "id_original": "12345",
+                "marca": "TOYOTA",
+                "modelo": "COROLLA",
+                "anio": 2023,
+                "version_limpia": "ADVANCE SEDAN 145HP 2L 4CIL 4Puertas",
+                "transmision": "AUTO",
+                "hash_comercial": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "total_procesados": 1,
+            "registros_creados": 1,
+            "errores": 0
+          }
+        }
+      }
+    }
+  }
+}
