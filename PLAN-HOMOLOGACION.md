@@ -40,6 +40,7 @@ Este documento describe una estrategia de homologación vehicular pensada para p
 ### b) Limpieza y Normalización
 
 - Limpiar y estandarizar los campos principales: `marca`, `modelo`, `anio`, `transmision`.
+- Traducir el número de puertas a el tipo de carrocería: `{ 2: 'hatchback', 3: 'sedan', 4: 'sedan', 5: 'pickup', 6: 'suv', 7: 'suv' }`.
 - Limpiar el campo `version` eliminando specs irrelevantes (A/A, E/E, PIEL, B/A, etc.) y normalizando el string.
 - Calcular el `hash_comercial` usando los 4 parámetros principales: `marca`, `modelo`, `anio`, `transmision`.
 - Validar que cada registro tenga los 4 main specs y una versión limpia.
