@@ -7,6 +7,7 @@
 - [Validacion y metricas.sql](file://src/supabase/Validacion y metricas.sql)
 - [WARP.md](file://WARP.md)
 - [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md)
+- [Replanteamiento homologacion.md](file://src/supabase/Replanteamiento homologacion.md)
 </cite>
 
 ## Table of Contents
@@ -53,6 +54,7 @@ The design prioritizes data integrity and auditability over storage optimization
 **Section sources**
 - [WARP.md](file://WARP.md#L152-L203)
 - [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L60-L94)
+- [Replanteamiento homologacion.md](file://src/supabase/Replanteamiento homologacion.md#L106-L121)
 
 ## RPC Function Logic for Status Merging
 The `procesar_batch_homologacion` function implements the core logic for merging new status updates while preserving historical records. The function uses JSONB concatenation to merge new insurer data into the existing `disponibilidad_aseguradoras` field.

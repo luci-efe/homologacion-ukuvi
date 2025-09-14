@@ -6,7 +6,15 @@
 - [hdi-query-de-extraccion.sql](file://src/insurers/hdi/hdi-query-de-extraccion.sql)
 - [instrucciones.md](file://instrucciones.md)
 - [Tabla maestra.sql](file://src/supabase/Tabla maestra.sql)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated with HDI extraction requirements*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated filtering criteria in Core Principles and HDI Case Study to reflect explicit requirement for active records and year range (2000–2030)
+- Added reference to `spec.md` as a new source file that formalizes HDI extraction logic
+- Clarified that temporal filtering is a mandatory constraint across all insurers
+- Enhanced consistency between documentation and latest specification requirements
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -96,6 +104,7 @@ These principles ensure that each query delivers clean, relevant, and manageable
 - [instrucciones.md](file://instrucciones.md#L1-L279)
 - [qualitas-query-de-extracción.sql](file://src/insurers/qualitas/qualitas-query-de-extracción.sql#L1-L26)
 - [hdi-query-de-extraccion.sql](file://src/insurers/hdi/hdi-query-de-extraccion.sql#L1-L27)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md#L1-L107) - *Formalized HDI extraction requirements*
 
 ## Query Design Patterns and Optimization Techniques
 
@@ -193,6 +202,7 @@ MarcasUnicas --|> Marca : "DISTINCT"
 
 **Section sources**
 - [hdi-query-de-extraccion.sql](file://src/insurers/hdi/hdi-query-de-extraccion.sql#L1-L27)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md#L1-L107) - *Specifies active record and year range constraints*
 
 ## Comparison of JOIN and Filtering Strategies
 

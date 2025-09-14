@@ -10,7 +10,17 @@
 - [src/insurers/zurich/zurich-codigo-de-normalizacion.js](file://src/insurers/zurich/zurich-codigo-de-normalizacion.js)
 - [src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js)
 - [WARP.md](file://WARP.md)
+- [specs/001-crea-especificaciones-para/spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated in commit 934b5aefbacbf336e76ab7029d1f4e50062f090d*
+- [src/insurers/hdi/ETL - HDI.json](file://src/insurers/hdi/ETL - HDI.json) - *Updated in commit 934b5aefbacbf336e76ab7029d1f4e50062f090d*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated **Hash Generation Process** section to reflect HDI-specific normalization logic and hash field naming (`hash_tecnico` → `id_canonico`)
+- Added new **HDI-Specific Normalization** subsection under Hash Generation Process
+- Updated **Deduplication Strategy** to reflect use of `hash_tecnico` in n8n workflows
+- Enhanced **Hash Sensitivity Analysis** with HDI-specific examples
+- Updated section sources to include HDI specification and ETL files
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,6 +42,10 @@ The hash-based deduplication system is a critical component of the vehicle catal
 ## Hash Generation Process
 
 The system generates two distinct SHA-256 hashes for each vehicle record: `hash_comercial` and `id_canonico`. The `hash_comercial` is calculated from normalized values of brand, model, year, and transmission, serving as a commercial identifier that groups vehicles with identical core specifications. The `id_canonico` builds upon this foundation by incorporating additional normalized attributes including version/trim, motor configuration, body type, and traction system. Before hash computation, all input data undergoes rigorous normalization including conversion to uppercase, removal of accents and special characters, collapsing of multiple spaces, and mapping of common abbreviations (e.g., "AUT." to "AUTO"). This normalization process ensures consistency across data sources with varying formatting conventions. The hash generation function, implemented across multiple insurer-specific normalization scripts, follows a standardized pattern of filtering null/undefined values, joining components with a pipe delimiter, and computing the SHA-256 digest.
+
+### HDI-Specific Normalization
+
+The HDI insurer implementation follows a specialized normalization process with aggressive cleaning rules to handle comma-separated specifications in the `ClaveVersion` field. The normalization pipeline applies a strict 10-step cleaning sequence: (1) Remove "BASE" and associated specifications, (2) Eliminate "CP PUERTAS" variants, (3) Remove body types, (4) Remove transmission variants (DSG, CVT, etc.), (5) Remove engine specifications, (6) Remove power metrics, (7) Remove traction systems, (8) Remove fuel types, (9) Remove occupant counts, and (10) Remove equipment codes. This aggressive cleaning ensures consistent trim extraction from HDI's complex version strings. The system uses `hash_tecnico` as the technical hash (equivalent to `id_canonico`) and generates it by combining commercial specifications with technical attributes.
 
 ```mermaid
 flowchart TD
@@ -59,10 +73,12 @@ L --> O[Store hash_comercial]
 N --> P[Store id_canonico]
 ```
 
-**Diagram sources **
+**Section sources**
 - [instrucciones.md](file://instrucciones.md#L99-L106)
 - [src/insurers/hdi/hdi-codigo-de-normalizacion.js#L43-L81)
 - [src/insurers/elpotosi/elpotosi-codigo-de-normalizacion.js#L31-L71)
+- [specs/001-crea-especificaciones-para/spec.md](file://specs/001-crea-especificaciones-para/spec.md#L1-L107) - *Updated in recent commit*
+- [src/insurers/hdi/ETL - HDI.json](file://src/insurers/hdi/ETL - HDI.json#L1-L178) - *Updated in recent commit*
 
 ## Deduplication Strategy
 
@@ -71,6 +87,7 @@ The deduplication process occurs during batch processing in the n8n orchestratio
 **Section sources**
 - [instrucciones.md](file://instrucciones.md#L200-L250)
 - [src/supabase/Replanteamiento homologacion.md](file://src/supabase/Replanteamiento homologacion.md#L200-L250)
+- [src/insurers/hdi/ETL - HDI.json](file://src/insurers/hdi/ETL - HDI.json#L46-L66) - *Updated in recent commit*
 
 ## Conflict Resolution
 
@@ -98,7 +115,7 @@ end
 Supabase->>n8n : Return processing metrics
 ```
 
-**Diagram sources **
+**Diagram sources**
 - [instrucciones.md](file://instrucciones.md#L250-L300)
 - [src/supabase/Replanteamiento homologacion.md](file://src/supabase/Replanteamiento homologacion.md#L250-L300)
 

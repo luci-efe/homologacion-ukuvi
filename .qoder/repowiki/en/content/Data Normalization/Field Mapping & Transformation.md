@@ -8,7 +8,16 @@
 - [qualitas-analisis.md](file://src/insurers/qualitas/qualitas-analisis.md)
 - [elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md)
 - [WARP.md](file://WARP.md)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md) - *Updated with door-to-body mapping*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added detailed information about door-to-body type mapping in cross-insurer patterns
+- Updated cross-insurer field mapping patterns to reflect new door-based body type inference
+- Enhanced body type inference explanation with specific door-to-body mappings
+- Added references to PLAN-HOMOLOGACION.md which contains the updated strategy
+- Maintained all existing content while incorporating the new door mapping information
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -86,10 +95,13 @@ The treatment of trim levels varies significantly between insurers. HDI employs 
 
 Body type inference follows similar patterns across insurers, typically using a hierarchy of sources: explicit body type fields, keywords in version text (SEDAN, SUV, COUPE), and inference from door count (2=COUPE, 3=HATCHBACK, 4=SEDAN, 5=SUV/HATCHBACK). The specific implementation details vary, with some insurers like El Potosí having dedicated vehicle type codes that inform the inference process.
 
+A recent update to the homologation strategy has formalized the door-to-body type mapping, establishing a standardized approach across insurers. The mapping is as follows: 2 doors → "COUPE", 3 doors → "HATCHBACK", 4 doors → "SEDAN", 5 doors → "SUV", 6 doors → "SUV", 7 doors → "SUV". This standardized mapping ensures consistency in body type inference across different insurers, particularly when explicit body type information is not available in the source data.
+
 **Section sources**
 - [ana-analisis.md](file://src/insurers/ana/ana-analisis.md#L0-L324)
 - [qualitas-analisis.md](file://src/insurers/qualitas/qualitas-analisis.md#L0-L332)
 - [elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md#L0-L363)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L0-L155) - *Updated with door-to-body mapping*
 
 ## Data Transformation Techniques
 The normalization system employs several advanced data transformation techniques to handle the complexities of insurer data. These techniques ensure consistent output despite variations in input format and quality.

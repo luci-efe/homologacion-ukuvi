@@ -10,7 +10,16 @@
 - [src/insurers/hdi/hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js)
 - [src/insurers/gnp/gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js)
 - [src/insurers/elpotosi/elpotosi-codigo-de-normalizacion.js](file://src/insurers/elpotosi/elpotosi-codigo-de-normalizacion.js)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md) - *Updated with refined homologation strategy*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated homologation strategy details based on latest planning document
+- Enhanced normalization procedures in key concepts section
+- Added clarification on batch processing size (10k records) from insurer analysis
+- Refined description of idempotent processing and conflict resolution
+- Improved accuracy of RPC function behavior description
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -52,6 +61,7 @@ These objectives ensure that the system provides a reliable, consistent, and mai
 **Section sources**
 - [instrucciones.md](file://instrucciones.md#L3-L25)
 - [WARP.md](file://WARP.md#L10-L25)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L1-L20)
 
 ## Target Audience
 
@@ -91,7 +101,7 @@ I --> J[Profiling & Validation]
 J --> K[Mapping Suggestions]
 ```
 
-**Diagram sources **
+**Diagram sources**
 - [WARP.md](file://WARP.md#L150-L170)
 
 The system architecture consists of four main layers:
@@ -135,6 +145,10 @@ The processing workflow follows these steps:
 
 This approach ensures that the system can recover from failures and reprocess data as needed without compromising data integrity.
 
+**Section sources**
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L1-L50)
+- [src/supabase/Funcion RPC Nueva.sql](file://src/supabase/Funcion RPC Nueva.sql#L1-L50)
+
 ### Hash-Based Deduplication
 
 Hash-based deduplication is a fundamental mechanism in the homologacion-ukuvi system. By generating consistent hashes from normalized vehicle specifications, the system can identify duplicate records across different insurers and consolidate them into a single canonical entry.
@@ -162,6 +176,9 @@ Supabase serves as the central data repository and processing engine for the sys
 
 The Supabase RPC function `procesar_batch_homologacion` acts as the primary interface for data ingestion. This function handles batch processing of normalized vehicle data, performing upsert operations, merging insurer availability information, and returning detailed processing metrics. The function is designed with security in mind, using the `SECURITY DEFINER` option to ensure proper access control.
 
+**Section sources**
+- [src/supabase/Funcion RPC Nueva.sql](file://src/supabase/Funcion RPC Nueva.sql#L1-L100)
+
 ### n8n Workflows
 
 n8n orchestrates the data extraction and normalization process through a series of workflows that handle each insurer's data. The workflow begins with data extraction from the insurer's database, followed by normalization using JavaScript functions that apply insurer-specific rules.
@@ -175,6 +192,10 @@ The normalization process includes:
 - Hash generation for deduplication
 
 After normalization, the workflow performs deduplication by `id_canonico`, groups records into batches of 10,000-50,000 records, and sends them to the Supabase RPC endpoint. The workflow includes logging, error handling, and retry mechanisms to ensure reliable data processing.
+
+**Section sources**
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L50-L100)
+- [src/insurers/axa/axa-analisis.md](file://src/insurers/axa/axa-analisis.md#L310-L313)
 
 ### Insurer-Specific Normalization
 
@@ -202,7 +223,7 @@ J --> K[Supabase RPC]
 K --> L[catalogo_homologado]
 ```
 
-**Diagram sources **
+**Diagram sources**
 - [src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L1-L50)
 - [src/insurers/hdi/hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L1-L50)
 - [src/insurers/gnp/gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L1-L50)

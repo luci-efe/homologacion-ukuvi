@@ -6,7 +6,17 @@
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js)
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md)
 - [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated with HDI ClaveVersion parsing requirements*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added detailed explanation of HDI's comma-separated ClaveVersion field parsing
+- Updated transmission code normalization to include CVT and DSG mapping to AUTO
+- Enhanced version cleaning logic to reflect aggressive removal of problematic patterns
+- Added new section on comma-separated specification parsing for HDI
+- Updated field mapping strategies to reflect HDI's unique data structure
+- Added new acceptance scenario for ClaveVersion processing
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -18,6 +28,7 @@
 7. [Performance Optimizations](#performance-optimizations)
 8. [Normalization Template](#normalization-template)
 9. [Implementation Guidelines](#implementation-guidelines)
+10. [HDI-Specific Processing](#hdi-specific-processing)
 
 ## Introduction
 
@@ -116,3 +127,21 @@ To maintain consistency across normalization script implementations, several gui
 **Section sources**
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md#L209-L254)
 - [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L519-L524)
+
+## HDI-Specific Processing
+
+HDI's vehicle catalog data features a unique structure with comma-separated specifications in the ClaveVersion field, requiring specialized parsing logic. The normalization process for HDI follows a highly structured approach due to the consistent format of this field. The ClaveVersion field follows a predictable pattern: "[TRIM], [CONFIG_MOTOR], [CILINDRADA], [POTENCIA] CP, [PUERTAS] PUERTAS, [TRANSMISION], [EXTRAS]". This structure enables reliable extraction of vehicle specifications through comma-based splitting and positional analysis.
+
+The trim/version extraction follows a critical rule: the TRIM is always located before the first comma. The `extraerTrimHDI` function implements this logic by finding the first comma position and extracting all text before it, with validation to ensure the extracted text is not a technical specification (like engine configuration or displacement). For records without commas, the entire ClaveVersion field is treated as the trim.
+
+Transmission code normalization has been enhanced to handle HDI's specific transmission codes. The system maps various transmission indicators to standardized values: "AUT" → "AUTO", "STD" → "MANUAL", "CVT" → "AUTO", "DSG" → "AUTO", "TIPTRONIC" → "AUTO", and "STRONIC" → "AUTO". This mapping ensures consistency across different transmission nomenclature used by HDI.
+
+The version cleaning process implements aggressive removal of problematic patterns, particularly "CP PUERTAS" and its variants, which appear frequently in HDI data. The cleaning sequence is optimized to remove problematic patterns first, including "BASE" and "CP PUERTAS" in all their variations, followed by technical specifications, transmission codes, and body styles. This aggressive cleaning ensures that only meaningful trim information remains in the final version field.
+
+**Acceptance Scenario Update**
+- **Given** HDI vehicle record with structured ClaveVersion field "GLS PREMIUM, L4, 1.5L, 113 CP, 5 PUERTAS, AUT, BA, AA", **When** system processes the record, **Then** it extracts cleaned version "GLS PREMIUM" and identifies automatic transmission from "AUT"
+
+**Section sources**
+- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L200-L234)
+- [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L66-L101)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md#L55-L68)

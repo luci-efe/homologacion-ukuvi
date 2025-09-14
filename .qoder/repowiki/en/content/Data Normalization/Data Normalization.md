@@ -2,13 +2,22 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js)
+- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js) - *Updated in recent commit*
+- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js) - *Updated in recent commit*
 - [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js)
 - [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md)
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md)
 - [qualitas-analisis.md](file://src/insurers/qualitas/qualitas-analisis.md)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md) - *Updated in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated **Carrocería Inference from Model Names** section to include door-to-body-type mapping as specified in the latest commit
+- Added new door-to-body-type mapping logic from `PLAN-HOMOLOGACION.md` to the **Carrocería Inference from Model Names** section
+- Enhanced cleaning procedures in **Text Standardization** and **Trim and Version Extraction** sections based on updated normalization strategies
+- Updated **Section sources** to reflect the inclusion of `PLAN-HOMOLOGACION.md` in the documentation update
+- Maintained all existing structure while incorporating new mapping logic for body type inference
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -55,14 +64,10 @@ F --> G[Trim Leading/Trailing Whitespace]
 G --> H[Standardized Text Output]
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L30-L45)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L35-L50)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L15-L25)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L30-L45)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L35-L50)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L15-L25)
 
 ## Field Mapping and Canonical Transformation
 
@@ -106,14 +111,10 @@ NormalizationProcessor --> FieldMapper : "uses"
 FieldMapper --> CanonicalSchema : "produces"
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L100-L200)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L70-L150)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L50-L100)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L100-L200)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L70-L150)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L50-L100)
 
 ## Trim and Version Extraction
 
@@ -178,14 +179,10 @@ AB --> |Yes| AC[Return Trim]
 AB --> |No| AD[Return null]
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L300-L500)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L300-L400)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L300-L400)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L300-L500)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L300-L400)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L300-L400)
 
 ## Technical Specifications Parsing
 
@@ -221,14 +218,10 @@ Output->>Output : Validate ranges and consistency
 Output->>Output : Return complete specification object
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L500-L600)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L200-L300)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L200-L300)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L500-L600)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L200-L300)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L200-L300)
 
 ## Carrocería Inference from Model Names
 
@@ -261,14 +254,11 @@ J --> |Yes| K[Return Body Type]
 J --> |No| L[Return null]
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L550-L600)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L400-L500)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L400-L500)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L550-L600)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L400-L500)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L400-L500)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L1-L155) - *Updated in recent commit*
 
 ## Common Challenges and Resolution Strategies
 
@@ -309,14 +299,10 @@ M --> N
 N --> O[Consistent Canonical Output]
 ```
 
-**Diagram sources**
-- [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md#L50-L100)
-- [qualitas-analisis.md](file://src/insurers/qualitas/qualitas-analisis.md#L50-L100)
-- [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L50-L100)
-
 **Section sources**
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md#L50-L100)
 - [qualitas-analisis.md](file://src/insurers/qualitas/qualitas-analisis.md#L50-L100)
+- [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L50-L100)
 
 ## Best Practices for Maintainable Normalization Code
 
@@ -366,14 +352,10 @@ SpecParser --> HashGenerator : "uses"
 BodyTypeInferer --> SpecParser : "uses"
 ```
 
-**Diagram sources**
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L1-L100)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L1-L100)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L1-L100)
-
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L1-L100)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L1-L100)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L1-L100)
 
 ## Testing and Edge Case Handling
 
@@ -420,11 +402,7 @@ Q --> |No| S[Debug and Fix]
 S --> N
 ```
 
-**Diagram sources**
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L500-L600)
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L600-L700)
-- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L800-L900)
-
 **Section sources**
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L500-L600)
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L600-L700)
+- [qualitas-codigo-de-normalizacion-n8n.js](file://src/insurers/qualitas/qualitas-codigo-de-normalizacion-n8n.js#L800-L900)

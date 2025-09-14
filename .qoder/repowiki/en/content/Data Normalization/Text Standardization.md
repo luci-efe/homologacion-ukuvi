@@ -2,10 +2,18 @@
 
 <cite>
 **Referenced Files in This Document**   
-- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js)
-- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js)
-- [elpotosi-codigo-de-normalizacion.js](file://src/insurers/elpotosi/elpotosi-codigo-de-normalizacion.js)
+- [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js) - *Updated in recent commit with enhanced cleaning procedures*
+- [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js) - *Updated in recent commit with enhanced cleaning procedures*
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md) - *Added door number to body type mapping in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Updated **Core Text Normalization Process** section to include door-to-body-type mapping
+- Added new **Door-to-Body Type Mapping** subsection under **Best Practices for Edge Cases**
+- Enhanced **Implementation in HDI and GNP Scripts** with references to body type inference logic
+- Updated **Section sources** and **Diagram sources** to reflect new code locations and changes
+- Added references to PLAN-HOMOLOGACION.md in document sources
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -69,9 +77,25 @@ For **encoding issues**, the scripts implement defensive programming practices s
 
 Additionally, the scripts handle **performance-sensitive operations** by minimizing the number of string manipulations and using efficient regular expressions. The order of operations is optimized to reduce computational overhead, with simpler operations like case conversion performed before more complex Unicode normalization.
 
+### Door-to-Body Type Mapping
+Recent updates to the vehicle homologation strategy have introduced a standardized mapping between door count and body type, enhancing the accuracy of vehicle classification across insurer data sources. This mapping is implemented in the normalization process to infer body type when explicit information is unavailable.
+
+The door-to-body type mapping follows this standardized approach:
+- **2 doors**: COUPE
+- **3 doors**: HATCHBACK
+- **4 doors**: SEDAN
+- **5 doors**: SUV
+- **6 doors**: SUV
+- **7 doors**: SUV
+
+This mapping is applied as a fallback mechanism when explicit body type information is not available in the source data. The HDI normalization script implements this logic in the `extraerEspecificaciones` function, where it uses door count to infer body type when no explicit body type designation exists. This approach ensures consistent vehicle classification across all insurer data sources, even when some providers lack explicit body type information.
+
+The implementation can be seen in the HDI normalization script where door count is extracted from text patterns like "3 PUERTAS" or "5P" and then mapped to the corresponding body type according to the standard mapping above. This enhancement improves data consistency and enables more accurate vehicle matching across different insurance providers.
+
 **Section sources**
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L43-L56)
 - [gnp-codigo-de-normalizacion.js](file://src/insurers/gnp/gnp-codigo-de-normalizacion.js#L33-L43)
+- [PLAN-HOMOLOGACION.md](file://PLAN-HOMOLOGACION.md#L25-L26)
 
 ## Performance Implications
 The performance implications of repeated string operations in batch processing are significant, particularly when handling large volumes of insurer data. The text standardization process, while essential for data consistency, introduces computational overhead that must be carefully managed in production environments.

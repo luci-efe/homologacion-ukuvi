@@ -12,7 +12,18 @@
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md)
 - [elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md)
 - [ana-analisis.md](file://src/insurers/ana/ana-analisis.md)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated with HDI acceptance scenarios and edge cases*
+- [hdi-query-de-extraccion.sql](file://src/insurers/hdi/hdi-query-de-extraccion.sql) - *HDI extraction query with active records filter*
+- [ETL - HDI.json](file://src/insurers/hdi/ETL - HDI.json) - *n8n workflow for HDI data processing*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added HDI-specific acceptance scenarios and edge cases from recent specification update
+- Enhanced test case analysis with HDI-specific validation requirements
+- Updated common data issues section with HDI-specific edge cases
+- Added new sources for HDI-related files including specification, extraction query, and ETL workflow
+- Incorporated HDI-specific normalization strategies into writing effective test cases guidance
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -294,6 +305,8 @@ FROM catalogo_homologado;
 
 **Section sources**
 - [casos de prueba función rpc.sql](file://src/supabase/casos de prueba función rpc.sql#L1-L255)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md#L38-L68) - *Updated with HDI acceptance scenarios*
+- [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L1-L525) - *HDI-specific normalization strategies*
 
 ## Common Data Issues
 
@@ -334,6 +347,14 @@ Certain vehicle types present unique challenges:
 - **Pickup trucks**: With tonnage specifications
 - **Limited editions**: With unique trim levels
 
+### HDI-Specific Edge Cases
+Based on the updated specification, HDI presents specific edge cases that must be handled:
+
+- **Malformed ClaveVersion field**: When the field is missing comma separators, handled via fuzzy matching during Supabase integration
+- **Incomplete main specifications**: Records missing transmission, marca, modelo, or año are rejected during validation
+- **Unexpected record counts**: The system processes all valid active records regardless of expected count
+- **Version field cleaning**: Aggressive cleaning while preserving meaningful trim information, particularly removing "CP PUERTAS" variants while preserving trim names
+
 The validation framework addresses these issues through:
 - **Aggressive cleaning**: Removing equipment codes and marketing text
 - **Standardized formatting**: Converting to consistent case and spacing
@@ -348,6 +369,7 @@ The validation framework addresses these issues through:
 - [gnp-analisis.md](file://src/insurers/gnp/gnp-analisis.md#L1-L281)
 - [elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md#L1-L364)
 - [ana-analisis.md](file://src/insurers/ana/ana-analisis.md#L1-L325)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md#L49-L53) - *HDI-specific edge cases*
 
 ## Conclusion
 The validation and testing framework for the vehicle homologation system provides comprehensive coverage of data quality, processing metrics, and edge case handling. The SQL-based validation queries effectively measure homologation quality and identify areas for improvement. The test cases thoroughly verify the RPC function's behavior under various scenarios including new records, updates, conflicts, and progressive enrichment. The system tracks detailed metrics including processed records, warnings, errors, and deduplication rates, along with a confidence scoring mechanism to assess data quality. Validation results are used to continuously improve normalization rules and extraction queries for each insurer, addressing common data issues such as contamination, inconsistent formatting, missing data, and conflicting specifications. The framework provides clear guidance for writing effective test cases for new insurers and validating edge cases in vehicle data, ensuring robust and reliable homologation across diverse data sources.

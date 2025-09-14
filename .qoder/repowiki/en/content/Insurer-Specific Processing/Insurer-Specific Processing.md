@@ -14,7 +14,15 @@
 - [elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md)
 - [elpotosi-query-de-extraccion.sql](file://src/insurers/elpotosi/elpotosi-query-de-extraccion.sql)
 - [elpotosi-codigo-de-normalizacion.js](file://src/insurers/elpotosi/elpotosi-codigo-de-normalizacion.js)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated in recent commit*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added detailed HDI processing specifications based on updated feature documentation
+- Enhanced HDI section with functional requirements and acceptance scenarios
+- Updated section sources to reflect new spec.md reference
+- Maintained consistency with existing structure while incorporating new requirements
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -86,10 +94,34 @@ The `hdi-codigo-de-normalizacion.js` script implements aggressive cleaning rules
 
 It also infers body type from door count when explicit labels are missing and maps transmission codes to canonical values (AUTO/MANUAL).
 
+### Functional Requirements and Acceptance Scenarios
+
+Based on the updated specification in `spec.md`, the HDI processing workflow must adhere to the following functional requirements:
+
+**Functional Requirements:**
+- **FR-001**: System MUST extract only active vehicle records (Activo = 1) from HDI database
+- **FR-002**: System MUST filter records to include only vehicles from years 2000-2030
+- **FR-003**: System MUST extract and validate 4 essential fields: marca, modelo, año, and transmisión (all non-nullable)
+- **FR-004**: System MUST normalize transmission codes (AUT→AUTO, STD→MANUAL, CVT→AUTO, DSG→AUTO) to standard format
+- **FR-005**: System MUST extract and clean version field by removing irrelevant specifications like "CP PUERTAS", transmission codes, engine details, and technical noise while preserving meaningful trim names
+- **FR-006**: System MUST generate commercial hash using the 4 essential normalized fields: marca, modelo, año, and transmisión
+- **FR-007**: System MUST preserve complete cleaned version field for fuzzy matching during homologation process
+- **FR-008**: System MUST preserve HDI as origin aseguradora identifier throughout the process
+- **FR-009**: System MUST maintain traceability by preserving original HDI IdVersion and ClaveVersion values
+- **FR-010**: System MUST validate that processed records contain all 4 essential fields before integration
+- **FR-011**: System MUST handle records where version field is nullable or cannot be properly extracted
+
+**Acceptance Scenarios:**
+1. **Given** HDI database contains 84,579 total vehicle records with 38,186 active ones, **When** operator initiates extraction process, **Then** system extracts only active records from years 2000-2030 and processes exactly 38,186 records
+2. **Given** HDI vehicle record with structured ClaveVersion field "GLS PREMIUM, L4, 1.5L, 113 CP, 5 PUERTAS, AUT, BA, AA", **When** system processes the record, **Then** it extracts cleaned version "GLS PREMIUM" and identifies automatic transmission from "AUT"
+3. **Given** processed HDI records with commercial hashes, **When** system performs validation, **Then** records with missing essential fields (marca, modelo, año, transmisión) are rejected
+4. **Given** normalized HDI records ready for integration, **When** system sends data to homologation workflow, **Then** records are successfully integrated with proper aseguradora identification and metadata
+
 **Section sources**
 - [hdi-analisis.md](file://src/insurers/hdi/hdi-analisis.md#L1-L525)
 - [hdi-query-de-extraccion.sql](file://src/insurers/hdi/hdi-query-de-extraccion.sql#L1-L27)
 - [hdi-codigo-de-normalizacion.js](file://src/insurers/hdi/hdi-codigo-de-normalizacion.js#L1-L718)
+- [spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated in recent commit*
 
 ## GNP: Chaotic and Contaminated
 

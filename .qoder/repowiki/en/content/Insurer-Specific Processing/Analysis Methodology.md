@@ -11,7 +11,16 @@
 - [bx/bx-analisis.md](file://src/insurers/bx/bx-analisis.md)
 - [chubb/chubb-analisis.md](file://src/insurers/chubb/chubb-analisis.md)
 - [elpotosi/elpotosi-analisis.md](file://src/insurers/elpotosi/elpotosi-analisis.md)
+- [specs/001-crea-especificaciones-para/spec.md](file://specs/001-crea-especificaciones-para/spec.md) - *Updated with HDI specification details*
 </cite>
+
+## Update Summary
+**Changes Made**   
+- Added detailed HDI specification requirements from new feature specification
+- Enhanced HDI analysis with acceptance scenarios and edge cases
+- Updated functional requirements section with HDI-specific constraints
+- Added new content on HDI extraction and normalization strategies
+- Updated examples and statistics with precise HDI data from specification
 
 ## Table of Contents
 1. [Introduction](#introduction)
